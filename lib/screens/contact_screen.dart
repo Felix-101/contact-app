@@ -1,7 +1,7 @@
+import 'package:contact_app/model/contactModel.dart';
 import 'package:flutter/material.dart';
 import '../state/contact_book.dart';
-/* import 'add_contact_screen.dart';
-import '../model/contactModel.dart'; */
+/* import 'add_contact_screen.dart';*/
 
 class ContactScreen extends StatelessWidget {
   const ContactScreen({super.key});
@@ -9,7 +9,7 @@ class ContactScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Assuming ContactBook is a singleton or similar that manages contacts
-    final contactBook = ContactBook();
+    // final contactBook = ContactBook();
 
     return Scaffold(
       appBar: AppBar(
@@ -20,24 +20,39 @@ class ContactScreen extends StatelessWidget {
               "Contacts",
             ),
           )),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: contactBook.length,
-              itemBuilder: (BuildContext context, int index) {
-                final contact = contactBook.contact(atIndex: index);
-                if (contact != null) {
-                  return ListTile(
-                    title: Text(contact.name),
-                  );
-                } else {
-                  return const SizedBox.shrink(); // Handle null contact
-                }
-              },
-            ),
-          ),
-        ],
+      body:
+          // helps us to rebuild a widget whenever the value in it chnages
+          ValueListenableBuilder(
+        valueListenable:
+            ContactBook(), //this is what we are listening to(value notifier in our contact_book)
+        builder: (contact, value, child) {
+          final List<Contact> contacts = value;
+
+          return ListView.builder(
+            itemCount: contacts.length,
+            itemBuilder: (context, index) {
+              final contact = contacts[index];
+
+              return Dismissible(
+                onDismissed: (direction) {
+                  ContactBook().remove(contact: contact);
+                },
+                key: ValueKey(contact.id),
+                child: Material(
+                  color: Colors.white,
+                  elevation: 4.0,
+                  child: ListTile(
+                    title: Text(
+                      contact.name,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
+              );
+              // Handle null contact
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),

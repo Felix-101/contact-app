@@ -26,13 +26,17 @@ class _NewContatcViewState extends State<NewContatcView> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
   // The dispose() method is another lifecycle method in Flutter that is called when this widget is removed from the tree.
   // In this method, we call the dispose() method on the _controller to release any resources that it is using.
   // We then call the super.dispose() method to ensure that any parent widgets are also disposed of.
 
   @override
   Widget build(BuildContext context) {
-    final contact = Contact(name: _controller.text);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -46,18 +50,19 @@ class _NewContatcViewState extends State<NewContatcView> {
               prefixIcon: Icon(Icons.phone),
               hintText: "Enter contact name here...",
               hintStyle: TextStyle(
-                color: Colors.grey,
+                color: Color.fromARGB(255, 116, 116, 116),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
           ),
           TextButton(
             onPressed: () {
-              ContactBook().add(contact);
+              final contact = Contact(name: _controller.text.trim());
+              ContactBook().add(contact: contact);
               Navigator.of(context).pop();
             },
             child: const Text("Add Contact"),
